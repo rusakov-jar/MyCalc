@@ -143,6 +143,5 @@ public class Main
         System.out.println(tested("2.0--5"));
         System.out.println(tested("-2+3"));
         System.out.println(tested("12.0/2"));
-        // для проверки коммита
     }
 }

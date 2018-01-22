@@ -1,0 +1,58 @@
+package com.company;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class GUI extends JFrame {
+    private JButton button = new JButton("Tap it");
+    private JButton button2 = new JButton("Tap it");
+    private JTextField input = new JTextField("", 10);
+    private JLabel label = new JLabel("Input: ");
+    private JRadioButton radio1 = new JRadioButton("radio1");
+    private JRadioButton radio2 = new JRadioButton("radio2");
+    private JRadioButton radio3 = new JRadioButton("radio3");
+    private JCheckBox checkIt = new JCheckBox("check", true);
+
+    private GUI() {
+        super("Window name here");
+        this.setBounds(100, 100, 300, 250);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Container container = this.getContentPane();
+        container.setLayout(new GridLayout(5, 3, 2, 1));
+        container.add(label);
+        container.add(input);
+        ButtonGroup group = new ButtonGroup();
+        group.add(radio1);
+        group.add(radio2);
+        group.add(radio3);
+        container.add(radio1);
+        radio1.setSelected(true);
+        container.add(radio2);
+        container.add(radio3);
+        container.add(checkIt);
+        button.addActionListener(new Checker());
+        button2.addActionListener(new Checker());
+        container.add(button);
+        container.add(button2);
+    }
+
+    public static void main(String[] args) {
+        GUI justATest = new GUI();
+        justATest.setVisible(true);
+    }
+
+    class Checker implements ActionListener {
+        public void actionPerformed(ActionEvent failed) {
+            String teller = "button pressed \n" +
+                    "You wrote " + input.getText() + "\n" +
+                    (radio1.isSelected() ? "Radio 1" : "") + (radio2.isSelected() ? "Radio 2" : "")
+                    + (radio3.isSelected() ? "Radio 3" : "") +
+                    " is selcted." + "\n" + "checkIt " + (checkIt.isSelected() ? "is done" : "failed");
+            JOptionPane.showMessageDialog(null, teller, "output", JOptionPane.PLAIN_MESSAGE);
+        }
+    }
+}
+
+
