@@ -1,7 +1,5 @@
 package com.company;
-import java.util.Scanner;
 
-import com.company.GUI;
 public class Main
 {
     public static void main(String[] args)
