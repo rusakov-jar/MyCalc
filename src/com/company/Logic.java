@@ -1,28 +1,35 @@
 package com.company;
 
-///////////////////////////////////   класс Logic (просчёт выражений с двумя операндами и одним прератором)  //////////////
+/*
+ * класс Logic: просчёт  выражений (логика калькулятора)
+ */
 public class Logic {
-    // просчёт выражений с двумя операндами и одним прератором
-//-------------------------------------------------------------------------------------------------------------------------
-    public static String tested(String intro) // название логического смысла не несёт
+
+    /*
+     * Просчёт выражений с двумя операндами и одним знаком
+     */
+    public static String tested(String inputString) // название метода логического смысла не несёт
     {
-        String expression = intro;
+        String expression = inputString;
         expression = expression.replaceAll(" ", "");// корректировка строки
         String resultString;
-//-------------------------------------------------------------------------------------------------------------------------
         char operator;
+
         // обработка неправильных данных (если на входе просто число (2, -23 ...)
         if (expression.matches("-?\\d+\\.?(\\d+)?")) {
             resultString = expression;
         } else {
-//-------------------------------------------------------------------------------------------------------------------------
+
+            //выделение операндов
             String[] tester = expression.split("(?<=\\d)[-*/\\+]");
             double result = 0;
-            double operand1 = Double.parseDouble(tester[0]);// выделение операндов
+            double operand1 = Double.parseDouble(tester[0]);
             double operand2 = Double.parseDouble(tester[1]);
-//-------------------------------------------------------------------------------------------------------------------------            // получение промежуточного результата
+
+
+            //проверка знака между операндами и вычасление значения выражения
             operator = expression.charAt(tester[0].length());
-            switch (operator) // а switch комментировать надо? (по правилам оформления кода)
+            switch (operator)
             {
                 case '+':
                     result = operand1 + operand2;
@@ -40,28 +47,27 @@ public class Logic {
                     System.out.println("Неподдерживаемая операция");//а в моём коде default вообще нужен, или
                     // и без него заработало бы?
             }
-//-------------------------------------------------------------------------------------------------------------------------
+
             resultString = "" + result;
         }
         return resultString; //Возврат значения
     }
-//-------------------------------------------------------------------------------------------------------------------------
 
+    /*
+     *Обрабртка исходной строки
+     */
 
-    //-------------------------------------------------------------------------------------------------------------------------
-    // получение исходной строки
     public static String logic(String StartExpression) {
         String expressionInput;
         int expStart;
         int expEnd;
-//-------------------------------------------------------------------------------------------------------------------------
         StartExpression = "$" + StartExpression + "$"; //символы начала/конца строки
-//-------------------------------------------------------------------------------------------------------------------------
-        while (StartExpression.contains("*") || StartExpression.contains("/")) {// поиск выражений со знаками *,/
+// поиск выражений со знаками *,/
+        while (StartExpression.contains("*") || StartExpression.contains("/")) {
             expStart = 0;
             expressionInput = "";
-//-------------------------------------------------------------------------------------------------------------------------
-            while (StartExpression.charAt(expStart) != '/' // посимвольно собираем строку для tested
+            // посимвольно собираем строку для первой части кода
+            while (StartExpression.charAt(expStart) != '/'
                     && StartExpression.charAt(expStart) != '*') {
                 expStart++;
             }
@@ -72,8 +78,7 @@ public class Logic {
                 expressionInput += '-';
                 expEnd++;
             }
-//-------------------------------------------------------------------------------------------------------------------------
-            //поиск правого конца выражения для tested
+            //поиск правого конца выражения для первой части кода
             while (StartExpression.charAt(expEnd + 1) != '-'
                     && StartExpression.charAt(expEnd + 1) != '+' &&
                     StartExpression.charAt(expEnd + 1) != '/' &&
@@ -82,31 +87,31 @@ public class Logic {
                 expressionInput = expressionInput + StartExpression.charAt(expEnd + 1);
                 expEnd++;
             }
-//-------------------------------------------------------------------------------------------------------------------------
-            //поиск левого конца выражения для tested
+            //поиск левого конца выражения для первой части кода
             while (StartExpression.charAt(expStart - 1) != '+' &&
                     StartExpression.charAt(expStart - 1) != '-' &&
                     StartExpression.charAt(expStart - 1) != '$') {
                 expressionInput = StartExpression.charAt(expStart - 1) + expressionInput;
                 expStart--;
             }
-            // if operand 1 for "tested" <0
-            if (StartExpression.charAt(expStart) == '-' && (StartExpression.charAt(expStart - 1) == '-' ||
-                    StartExpression.charAt(expStart - 1) == '$' ||
-                    StartExpression.charAt(expStart - 1) == '+')) {
+            // if operand 1 for first part of code <0
+            if (StartExpression.charAt(expStart - 1) == '-' && (StartExpression.charAt(expStart - 2) == '-' ||
+                    StartExpression.charAt(expStart - 2) == '$' ||
+                    StartExpression.charAt(expStart - 2) == '+')) {
+                expressionInput = StartExpression.charAt(expStart - 1) + expressionInput;
                 expStart--;
-                expressionInput = StartExpression.charAt(expStart) + expressionInput;
             }
-//-------------------------------------------------------------------------------------------------------------------------
-            StartExpression = StartExpression.replaceFirst // замена выражения для tested в исходной строке на результат вычислений
-                    ("\\d+\\.?(\\d+)?[/*]\\d+\\.?(\\d+)?", tested(expressionInput));
-            System.out.println(StartExpression);// промежуточный результат (доп вывод)
+
+// замена выражения в исходной строке на результат вычислений
+            StartExpression = StartExpression.replaceFirst
+                    ("\\d+\\.?(\\d+)?[/*]-?\\d+\\.?(\\d+)?", tested(expressionInput));
+            System.out.println(StartExpression);           // промежуточный результат (доп вывод)
         }
-//-------------------------------------------------------------------------------------------------------------------------
 
         while (StartExpression.contains("+") || StartExpression.contains("-")
-                && !StartExpression.matches("\\$-\\d+\\.?(\\d+)?\\$")) //Это условие(эта строка) исключает зацикливание при ответе <0
-        { //поиск выражений со знаками +,-
+                //Это условие(строка ниже) исключает зацикливание при ответе <0
+                && !StartExpression.matches("\\$-\\d+\\.?(\\d+)?\\$")) {
+            //поиск выражений со знаками +,-
             expStart = 2;// чтобы первый "-" (если с него начинается строка) не ломал систему
             while (StartExpression.charAt(expStart) != '-' &&
                     StartExpression.charAt(expStart) != '+') {
@@ -114,31 +119,32 @@ public class Logic {
             }
             expressionInput = "" + StartExpression.charAt(expStart);
             expEnd = expStart;
-//-------------------------------------------------------------------------------------------------------------------------
-            if (StartExpression.charAt(expEnd + 1) == '-') { // проверка знака перед вторым числом
+            // проверка знака перед вторым числом
+            if (StartExpression.charAt(expEnd + 1) == '-') {
                 expEnd++;
                 expressionInput += '-';
             }
-//-------------------------------------------------------------------------------------------------------------------------
-            while (StartExpression.charAt(expEnd + 1) != '+' && // поиск конца выражения
+// поиск конца выражения
+            while (StartExpression.charAt(expEnd + 1) != '+' &&
                     StartExpression.charAt(expEnd + 1) != '-' &&
                     StartExpression.charAt(expEnd + 1) != '$') {
                 expEnd++;
                 expressionInput += StartExpression.charAt(expEnd);
             }
-//-------------------------------------------------------------------------------------------------------------------------
-            while (StartExpression.charAt(expStart - 1) != '$') { //поиск начала выражения
+            //поиск начала выражения
+            while (StartExpression.charAt(expStart - 1) != '$') {
                 expStart--;
                 expressionInput = StartExpression.charAt(expStart) + expressionInput;
             }
-//-------------------------------------------------------------------------------------------------------------------------
+
+
             StartExpression = StartExpression.replaceFirst
                     ("-?\\d+\\.?(\\d+)?[-\\+]-?\\d+\\.?(\\d+)?", tested(expressionInput));
             System.out.println(StartExpression);// промежуточный результат
         }
-//-------------------------------------------------------------------------------------------------------------------------
+        // итог
         StartExpression = StartExpression.replaceAll("\\$", "");//удаление доп символов (для красоты)
-        System.out.println(StartExpression); // итог
+        System.out.println(StartExpression);
         return (StartExpression);
     }
 }
