@@ -62,7 +62,7 @@ public class Logic {
         int expStart;
         int expEnd;
         StartExpression = "$" + StartExpression + "$"; //символы начала/конца строки
-// поиск выражений со знаками *,/
+        // поиск выражений со знаками *,/
         while (StartExpression.contains("*") || StartExpression.contains("/")) {
             expStart = 0;
             expressionInput = "";

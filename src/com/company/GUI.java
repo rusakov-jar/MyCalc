@@ -32,8 +32,8 @@ public class GUI extends JFrame {
     private JButton buttonEQW = new JButton("=");
     private JTextField input = new JTextField("", 10);
     private JLabel label = new JLabel("Input: ");
-    private JLabel emptyLabel2 = new JLabel("");
-    private JLabel emptyLabel = new JLabel("");
+    private JButton buttonClear = new JButton("C");
+    private JButton buttonBack = new JButton("Back");
 
     //создание окна
     GUI() {
@@ -48,8 +48,19 @@ public class GUI extends JFrame {
 
         container.add(label);
         container.add(input);
-        container.add(emptyLabel);
-        container.add(emptyLabel2);
+        // Анонимный класс для кнопки сброса текста в поле ввода
+        buttonClear.addActionListener(failed -> {
+                    input.setText("0");
+                }
+        );
+        //Анонимный класс для кнопки "стереть последний символ в строке"
+        buttonBack.addActionListener(failed -> {
+                    String teller = input.getText();
+                    input.setText(teller.substring(0, teller.length() - 1));
+                }
+        );
+        container.add(buttonClear);
+        container.add(buttonBack);
         button1.addActionListener(new ButtonSymbolChecker());
         button2.addActionListener(new ButtonSymbolChecker());
         button3.addActionListener(new ButtonSymbolChecker());
@@ -88,10 +99,12 @@ public class GUI extends JFrame {
     /*
      * Реакция на кнопки (блок)
      */
+
+    //Нажал на кнопку - к строке добавилось Имя нажатой кнопки
     class ButtonSymbolChecker implements ActionListener {
 
         public void actionPerformed(ActionEvent failed) {
-            String teller = input.getText() + ((JButton) failed.getSource()).getText(); //Нажал на кнопку - к строке добавилось Имя нажатой кнопки
+            String teller = input.getText() + ((JButton) failed.getSource()).getText();
             input.setText(teller);
         }
     }
