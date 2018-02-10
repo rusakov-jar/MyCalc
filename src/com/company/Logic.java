@@ -6,54 +6,6 @@ package com.company;
 public class Logic {
 
     /*
-     * Просчёт выражений с двумя операндами и одним знаком
-     */
-    public static String tested(String inputString) // название метода логического смысла не несёт
-    {
-        String expression = inputString;
-        expression = expression.replaceAll(" ", "");// корректировка строки
-        String resultString;
-        char operator;
-
-        // обработка неправильных данных (если на входе просто число (2, -23 ...)
-        if (expression.matches("-?\\d+\\.?(\\d+)?")) {
-            resultString = expression;
-        } else {
-
-            //выделение операндов
-            String[] tester = expression.split("(?<=\\d)[-*/\\+]");
-            double result = 0;
-            double operand1 = Double.parseDouble(tester[0]);
-            double operand2 = Double.parseDouble(tester[1]);
-
-
-            //проверка знака между операндами и вычасление значения выражения
-            operator = expression.charAt(tester[0].length());
-            switch (operator)
-            {
-                case '+':
-                    result = operand1 + operand2;
-                    break;
-                case '-':
-                    result = operand1 - operand2;
-                    break;
-                case '*':
-                    result = operand1 * operand2;
-                    break;
-                case '/':
-                    result = operand1 / operand2;
-                    break;
-                default:
-                    System.out.println("Неподдерживаемая операция");//а в моём коде default вообще нужен, или
-                    // и без него заработало бы?
-            }
-
-            resultString = "" + result;
-        }
-        return resultString; //Возврат значения
-    }
-
-    /*
      *Обрабртка исходной строки
      */
 
@@ -146,5 +98,52 @@ public class Logic {
         StartExpression = StartExpression.replaceAll("\\$", "");//удаление доп символов (для красоты)
         System.out.println(StartExpression);
         return (StartExpression);
+    }
+
+    /*
+     * Просчёт выражений с двумя операндами и одним знаком
+     */
+    private static String tested(String inputString) // название метода логического смысла не несёт
+    {
+        String expression = inputString;
+        expression = expression.replaceAll(" ", "");// корректировка строки
+        String resultString;
+        char operator;
+
+        // обработка неправильных данных (если на входе просто число (2, -23 ...)
+        if (expression.matches("-?\\d+\\.?(\\d+)?")) {
+            resultString = expression;
+        } else {
+
+            //выделение операндов
+            String[] tester = expression.split("(?<=\\d)[-*/\\+]");
+            double result = 0;
+            double operand1 = Double.parseDouble(tester[0]);
+            double operand2 = Double.parseDouble(tester[1]);
+
+
+            //проверка знака между операндами и вычасление значения выражения
+            operator = expression.charAt(tester[0].length());
+            switch (operator) {
+                case '+':
+                    result = operand1 + operand2;
+                    break;
+                case '-':
+                    result = operand1 - operand2;
+                    break;
+                case '*':
+                    result = operand1 * operand2;
+                    break;
+                case '/':
+                    result = operand1 / operand2;
+                    break;
+                default:
+                    System.out.println("Неподдерживаемая операция");//а в моём коде default вообще нужен, или
+                    // и без него заработало бы?
+            }
+
+            resultString = "" + result;
+        }
+        return resultString; //Возврат значения
     }
 }

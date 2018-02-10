@@ -41,7 +41,6 @@ public class GUI extends JFrame {
         // параметры окна (кординаты верхнего правого угла+ ширина и высота окна)
         this.setBounds(100, 100, 300, 250);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         Container container = this.getContentPane();
         //параметры окна(строки,столбцы,отступ вбок, отступ вверх)
         container.setLayout(new GridLayout(5, 4, 2, 1));
@@ -76,7 +75,13 @@ public class GUI extends JFrame {
         buttonPoint.addActionListener(new ButtonSymbolChecker());
         buttonIncreace.addActionListener(new ButtonSymbolChecker());
         buttonDevide.addActionListener(new ButtonSymbolChecker());
-        buttonEQW.addActionListener(new CheckerForButtonEQW());
+        // Анонимный класс-обработчик для кнопки "равно"
+        buttonEQW.addActionListener(failed -> {
+                    String teller = input.getText();
+                    Logic writer = new Logic();
+                    input.setText(writer.logic(teller));
+                }
+        );
         container.add(button1);
         container.add(button2);
         container.add(button3);
@@ -100,21 +105,12 @@ public class GUI extends JFrame {
      * Реакция на кнопки (блок)
      */
 
-    //Нажал на кнопку - к строке добавилось Имя нажатой кнопки
+    //Нажал на кнопку - в форму ввода добавилось Имя нажатой кнопки
     class ButtonSymbolChecker implements ActionListener {
 
         public void actionPerformed(ActionEvent failed) {
             String teller = input.getText() + ((JButton) failed.getSource()).getText();
             input.setText(teller);
-        }
-    }
-
-    // Нажал на кнопку - посчитал выражение в input и вывел внутри формы ввода
-    class CheckerForButtonEQW implements ActionListener {
-        public void actionPerformed(ActionEvent failed) {
-            String teller = input.getText();
-            Logic writer = new Logic();
-            input.setText(writer.logic(teller));
         }
     }
 }
