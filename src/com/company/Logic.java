@@ -95,6 +95,7 @@ public class Logic {
             System.out.println(StartExpression);// промежуточный результат
         }
         // итог
+        StartExpression = StartExpression.replace(".0$", "");
         StartExpression = StartExpression.replaceAll("\\$", "");//удаление доп символов (для красоты)
         System.out.println(StartExpression);
         return (StartExpression);
