@@ -34,6 +34,10 @@ public class GUI extends JFrame {
     private JLabel label = new JLabel("Input: ");
     private JButton buttonClear = new JButton("C");
     private JButton buttonBack = new JButton("Back");
+    private JButton buttonSQRT = new JButton("SQRT(x)");
+    private JButton buttonLeft = new JButton("(");
+    private JButton buttonRight = new JButton(")");
+    private JButton buttonLG = new JButton("Lg(x)");
 
     //создание окна
     GUI() {
@@ -43,10 +47,18 @@ public class GUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container container = this.getContentPane();
         //параметры окна(строки,столбцы,отступ вбок, отступ вверх)
-        container.setLayout(new GridLayout(5, 4, 2, 1));
-
-        container.add(label);
-        container.add(input);
+        container.setLayout(new BorderLayout());
+        JPanel top = new JPanel();
+        JPanel center = new JPanel();
+        JPanel ground = new JPanel();
+        center.setLayout(new GridLayout(5, 4, 2, 1));
+        top.setLayout(new BorderLayout());
+        ground.setLayout(new GridLayout(2, 2, 2, 1));
+        container.add(top, BorderLayout.NORTH);
+        container.add(ground, BorderLayout.SOUTH);
+        container.add(center, BorderLayout.CENTER);
+        top.add(label, BorderLayout.WEST);
+        top.add(input, BorderLayout.CENTER);
         // Анонимный класс для кнопки сброса текста в поле ввода
         buttonClear.addActionListener(failed -> {
                     input.setText("0");
@@ -58,8 +70,12 @@ public class GUI extends JFrame {
                     input.setText(teller.substring(0, teller.length() - 1));
                 }
         );
-        container.add(buttonClear);
-        container.add(buttonBack);
+        buttonLeft.addActionListener(new ButtonSymbolChecker());
+        buttonRight.addActionListener(new ButtonSymbolChecker());
+        center.add(buttonLeft);
+        center.add(buttonRight);
+        center.add(buttonClear);
+        center.add(buttonBack);
         button1.addActionListener(new ButtonSymbolChecker());
         button2.addActionListener(new ButtonSymbolChecker());
         button3.addActionListener(new ButtonSymbolChecker());
@@ -82,22 +98,22 @@ public class GUI extends JFrame {
                     input.setText(writer.logic(teller));
                 }
         );
-        container.add(button1);
-        container.add(button2);
-        container.add(button3);
-        container.add(buttonPlus);
-        container.add(button4);
-        container.add(button5);
-        container.add(button6);
-        container.add(buttonMinus);
-        container.add(button7);
-        container.add(button8);
-        container.add(button9);
-        container.add(buttonIncreace);
-        container.add(buttonPoint);
-        container.add(button0);
-        container.add(buttonEQW);
-        container.add(buttonDevide);
+        center.add(button1);
+        center.add(button2);
+        center.add(button3);
+        center.add(buttonPlus);
+        center.add(button4);
+        center.add(button5);
+        center.add(button6);
+        center.add(buttonMinus);
+        center.add(button7);
+        center.add(button8);
+        center.add(button9);
+        center.add(buttonIncreace);
+        center.add(buttonPoint);
+        center.add(button0);
+        center.add(buttonEQW);
+        center.add(buttonDevide);
     }
 
     ////////////////////////////////////   КОНЕЦ КЛАССА GUI    //////////////////////////////////////////////////////////
