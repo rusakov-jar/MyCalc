@@ -38,7 +38,11 @@ public class GUI extends JFrame {
     private JButton buttonLeft = new JButton("(");
     private JButton buttonRight = new JButton(")");
     private JButton buttonLG = new JButton("Lg(x)");
-
+    private JButton buttonAVX = new JButton("A^(x)");
+    private JButton buttonLeftShift = new JButton("Left Shift");
+    private JButton buttonRightShift = new JButton("Right Shift");
+    private JButton buttonJurnal = new JButton("Jurnal");
+    private JLabel picture = new JLabel("picture here");
     //создание окна
     GUI() {
         super("Ярс калькулятор");
@@ -53,7 +57,13 @@ public class GUI extends JFrame {
         JPanel ground = new JPanel();
         center.setLayout(new GridLayout(5, 4, 2, 1));
         top.setLayout(new BorderLayout());
-        ground.setLayout(new GridLayout(2, 2, 2, 1));
+        ground.setLayout(new GridLayout(3, 2, 2, 1));
+        ground.add(buttonLeftShift);
+        ground.add(buttonEQW);
+        ground.add(buttonRightShift);
+        ground.add(buttonJurnal);
+        ground.add(picture);
+        ground.add(buttonBack);
         container.add(top, BorderLayout.NORTH);
         container.add(ground, BorderLayout.SOUTH);
         container.add(center, BorderLayout.CENTER);
@@ -72,10 +82,6 @@ public class GUI extends JFrame {
         );
         buttonLeft.addActionListener(new ButtonSymbolChecker());
         buttonRight.addActionListener(new ButtonSymbolChecker());
-        center.add(buttonLeft);
-        center.add(buttonRight);
-        center.add(buttonClear);
-        center.add(buttonBack);
         button1.addActionListener(new ButtonSymbolChecker());
         button2.addActionListener(new ButtonSymbolChecker());
         button3.addActionListener(new ButtonSymbolChecker());
@@ -112,8 +118,13 @@ public class GUI extends JFrame {
         center.add(buttonIncreace);
         center.add(buttonPoint);
         center.add(button0);
-        center.add(buttonEQW);
+        center.add(buttonAVX);
         center.add(buttonDevide);
+        center.add(buttonLeft);
+        center.add(buttonRight);
+        center.add(buttonSQRT);
+        center.add(buttonLG);
+
     }
 
     ////////////////////////////////////   КОНЕЦ КЛАССА GUI    //////////////////////////////////////////////////////////
