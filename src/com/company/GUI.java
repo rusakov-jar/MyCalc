@@ -14,6 +14,14 @@ import javax.swing.*;
  */
 // окно и список элементов
 public class GUI extends JFrame {
+
+    Image imgSQRTX = new ImageIcon("images\\sqr(x).png").getImage();
+    Image imgAX = new ImageIcon("images\\A(x).png").getImage();
+    Image imgLeftShift = new ImageIcon("images\\LeftShift.png").getImage();
+    Image imgRightShift = new ImageIcon("images\\RightShift.png").getImage();
+    Image imgPicture = new ImageIcon("images\\picture.png").getImage();
+    Image imgLog_x = new ImageIcon("images\\log_x.png").getImage();
+
     private JButton button1 = new JButton("1");
     private JButton button2 = new JButton("2");
     private JButton button3 = new JButton("3");
@@ -34,27 +42,27 @@ public class GUI extends JFrame {
     private JLabel label = new JLabel("Input: ");
     private JButton buttonClear = new JButton("C");
     private JButton buttonBack = new JButton("Back");
-    private JButton buttonSQRT = new JButton("SQRT(x)");
+    private JButton buttonSQRT = new JButton(new ImageIcon(imgSQRTX));
     private JButton buttonLeft = new JButton("(");
     private JButton buttonRight = new JButton(")");
-    private JButton buttonLG = new JButton("Lg(x)");
-    private JButton buttonAVX = new JButton("A^(x)");
-    private JButton buttonLeftShift = new JButton("Left Shift");
-    private JButton buttonRightShift = new JButton("Right Shift");
+    private JButton buttonLG = new JButton(new ImageIcon(imgLog_x));
+    private JButton buttonAVX = new JButton(new ImageIcon(imgAX));
+    private JButton buttonLeftShift = new JButton(new ImageIcon(imgLeftShift));
+    private JButton buttonRightShift = new JButton(new ImageIcon(imgRightShift));
     private JButton buttonJurnal = new JButton("Jurnal");
-    private JLabel picture = new JLabel("picture here");
+    private JLabel picture = new JLabel(new ImageIcon(imgPicture));
     //создание окна
     GUI() {
         super("Ярс калькулятор");
         // параметры окна (кординаты верхнего правого угла+ ширина и высота окна)
-        this.setBounds(100, 100, 300, 250);
+        this.setBounds(100, 100, 400, 300);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container container = this.getContentPane();
-        //параметры окна(строки,столбцы,отступ вбок, отступ вверх)
         container.setLayout(new BorderLayout());
         JPanel top = new JPanel();
         JPanel center = new JPanel();
         JPanel ground = new JPanel();
+        //параметры окна(строки,столбцы,отступ вбок, отступ вверх)
         center.setLayout(new GridLayout(5, 4, 2, 1));
         top.setLayout(new BorderLayout());
         ground.setLayout(new GridLayout(3, 2, 2, 1));
@@ -72,12 +80,26 @@ public class GUI extends JFrame {
         // Анонимный класс для кнопки сброса текста в поле ввода
         buttonClear.addActionListener(failed -> {
                     input.setText("0");
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
         //Анонимный класс для кнопки "стереть последний символ в строке"
         buttonBack.addActionListener(failed -> {
+                    int caretIndex = input.getCaretPosition();
                     String teller = input.getText();
-                    input.setText(teller.substring(0, teller.length() - 1));
+                    input.setText(teller.substring(0, caretIndex - 1) + teller.substring(caretIndex));
+                    input.setCaretPosition(caretIndex - 1);
+                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+                }
+        );
+        buttonLeftShift.addActionListener(failed -> {
+                    input.setCaretPosition(input.getCaretPosition() - 1);
+                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+                }
+        );
+        buttonRightShift.addActionListener(failed -> {
+            input.setCaretPosition(input.getCaretPosition() + 1);
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
         buttonLeft.addActionListener(new ButtonSymbolChecker());
@@ -102,6 +124,7 @@ public class GUI extends JFrame {
                     String teller = input.getText();
                     Logic writer = new Logic();
                     input.setText(writer.logic(teller));
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
         center.add(button1);
@@ -124,7 +147,6 @@ public class GUI extends JFrame {
         center.add(buttonRight);
         center.add(buttonSQRT);
         center.add(buttonLG);
-
     }
 
     ////////////////////////////////////   КОНЕЦ КЛАССА GUI    //////////////////////////////////////////////////////////
@@ -136,8 +158,12 @@ public class GUI extends JFrame {
     class ButtonSymbolChecker implements ActionListener {
 
         public void actionPerformed(ActionEvent failed) {
-            String teller = input.getText() + ((JButton) failed.getSource()).getText();
-            input.setText(teller);
+            StringBuffer addText = new StringBuffer(input.getText());
+            int stringIndex = input.getCaretPosition();
+            addText.insert(stringIndex, ((JButton) failed.getSource()).getText());
+            input.setText(String.valueOf(addText));
+            input.setCaretPosition(stringIndex + 1);
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
         }
     }
 }
