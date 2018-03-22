@@ -3,6 +3,8 @@ package com.company;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.*;
+
 
 /*
  *  Интерфейс калькулятора
@@ -49,7 +51,7 @@ public class GUI extends JFrame {
     private JButton buttonAVX = new JButton(new ImageIcon(imgAX));
     private JButton buttonLeftShift = new JButton(new ImageIcon(imgLeftShift));
     private JButton buttonRightShift = new JButton(new ImageIcon(imgRightShift));
-    private JButton buttonJurnal = new JButton("Jurnal");
+    private JButton buttonJurnal = new JButton("Journal");
     private JLabel picture = new JLabel(new ImageIcon(imgPicture));
     //создание окна
     GUI() {
@@ -87,18 +89,24 @@ public class GUI extends JFrame {
         buttonBack.addActionListener(failed -> {
                     int caretIndex = input.getCaretPosition();
                     String teller = input.getText();
-                    input.setText(teller.substring(0, caretIndex - 1) + teller.substring(caretIndex));
-                    input.setCaretPosition(caretIndex - 1);
+            if (input.getText().length() != 0) {
+                input.setText(teller.substring(0, caretIndex - 1) + teller.substring(caretIndex));
+                input.setCaretPosition(caretIndex - 1);
+            }
                     input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
         buttonLeftShift.addActionListener(failed -> {
-                    input.setCaretPosition(input.getCaretPosition() - 1);
+            if (input.getCaretPosition() > 0) {
+                input.setCaretPosition(input.getCaretPosition() - 1);
+            }
                     input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
         buttonRightShift.addActionListener(failed -> {
-            input.setCaretPosition(input.getCaretPosition() + 1);
+            if (input.getCaretPosition() < input.getText().length()) {
+                input.setCaretPosition(input.getCaretPosition() + 1);
+            }
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
@@ -121,9 +129,19 @@ public class GUI extends JFrame {
         buttonDevide.addActionListener(new ButtonSymbolChecker());
         // Анонимный класс-обработчик для кнопки "равно"
         buttonEQW.addActionListener(failed -> {
-                    String teller = input.getText();
-                    Logic writer = new Logic();
-                    input.setText(writer.logic(teller));
+            Logic writer = new Logic();
+            String teller = input.getText();
+            String result = writer.logic(teller);
+            File journal = new File("Journal\\test.txt");
+            try {
+                PrintWriter journalWriter = new PrintWriter(
+                        new BufferedWriter(new FileWriter(journal, true)));
+                journalWriter.println(teller + "=" + result);
+                journalWriter.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            input.setText(result);
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
