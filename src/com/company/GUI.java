@@ -85,7 +85,7 @@ public class GUI extends JFrame {
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
-        //Анонимный класс для кнопки "стереть последний символ в строке"
+        //Анонимный класс для кнопки "стереть символ перед курсором в строке"
         buttonBack.addActionListener(failed -> {
                     int caretIndex = input.getCaretPosition();
                     String teller = input.getText();
@@ -129,22 +129,24 @@ public class GUI extends JFrame {
         buttonDevide.addActionListener(new ButtonSymbolChecker());
         // Анонимный класс-обработчик для кнопки "равно"
         buttonEQW.addActionListener(failed -> {
-            Logic writer = new Logic();
             String teller = input.getText();
-            String result = writer.logic(teller);
+            String result = Logic.parc(teller);
             File journal = new File("Journal\\test.txt");
             try {
                 PrintWriter journalWriter = new PrintWriter(
                         new BufferedWriter(new FileWriter(journal, true)));
                 journalWriter.println(teller + "=" + result);
-                journalWriter.close();
+                journalWriter.flush(); //чистка буфера (комментарий для себя)
+                journalWriter.close(); //закрытие потока/возвращение ресурсов
+                // (тоже для себя)
             } catch (IOException ex) {
-                ex.printStackTrace();
+                result = "";
             }
             input.setText(result);
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
+        // добавление кнопок на панель в середине
         center.add(button1);
         center.add(button2);
         center.add(button3);
@@ -172,7 +174,7 @@ public class GUI extends JFrame {
      * Реакция на кнопки (блок)
      */
 
-    //Нажал на кнопку - в форму ввода добавилось Имя нажатой кнопки
+    //Нажал на кнопку - в форму ввода добавилось Имя нажатой кнопки (этот класс)
     class ButtonSymbolChecker implements ActionListener {
 
         public void actionPerformed(ActionEvent failed) {

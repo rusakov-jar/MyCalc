@@ -9,7 +9,7 @@ public class Logic {
      *Обрабртка исходной строки
      */
 
-    public static String logic(String StartExpression) {
+    public static String parc(String StartExpression) {
         String expressionInput;
         int expStart;
         int expEnd;
