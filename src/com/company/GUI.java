@@ -57,7 +57,7 @@ public class GUI extends JFrame {
     GUI() {
         super("Ярс калькулятор");
         // параметры окна (кординаты верхнего правого угла+ ширина и высота окна)
-        this.setBounds(100, 100, 400, 300);
+        this.setBounds(100, 75, 400, 300);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container container = this.getContentPane();
         container.setLayout(new BorderLayout());
@@ -146,6 +146,10 @@ public class GUI extends JFrame {
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
+        buttonJurnal.addActionListener(e -> {
+            Journal JournalDemoApp = new Journal();
+            JournalDemoApp.setVisible(true);
+        });
         // добавление кнопок на панель в середине
         center.add(button1);
         center.add(button2);
