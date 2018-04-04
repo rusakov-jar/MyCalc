@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
+import java.awt.BorderLayout;
+import java.io.File;
+import java.util.Scanner;
 
 
 /*
@@ -23,6 +26,10 @@ public class GUI extends JFrame {
     Image imgRightShift = new ImageIcon("images\\RightShift.png").getImage();
     Image imgPicture = new ImageIcon("images\\picture.png").getImage();
     Image imgLog_x = new ImageIcon("images\\log_x.png").getImage();
+
+    int charCounter = 0;
+    String result = "";
+    private JTextArea editor;
 
     private JButton button1 = new JButton("1");
     private JButton button2 = new JButton("2");
@@ -53,6 +60,8 @@ public class GUI extends JFrame {
     private JButton buttonRightShift = new JButton(new ImageIcon(imgRightShift));
     private JButton buttonJurnal = new JButton("Journal");
     private JLabel picture = new JLabel(new ImageIcon(imgPicture));
+    private JTextField status;
+    private JFrame journalFrame = new JFrame();
     //создание окна
     GUI() {
         super("Ярс калькулятор");
@@ -147,8 +156,8 @@ public class GUI extends JFrame {
                 }
         );
         buttonJurnal.addActionListener(e -> {
-            Journal JournalDemoApp = new Journal();
-            JournalDemoApp.setVisible(true);
+            Journal();
+            input.grabFocus();
         });
         // добавление кнопок на панель в середине
         center.add(button1);
@@ -171,6 +180,88 @@ public class GUI extends JFrame {
         center.add(buttonRight);
         center.add(buttonSQRT);
         center.add(buttonLG);
+    }
+
+    public String Journal() {
+        journalFrame.setTitle("Журнал");
+        journalFrame.setBounds(500, 250, 500, 500);
+
+        // Lets create a border layout to make positioning of items easy and quick.
+        journalFrame.setLayout(new BorderLayout());
+        journalFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
+
+        journalFrame.setVisible(true);
+
+        String text = "";
+        File created = new File("Journal\\test.txt");
+        try {
+
+            Scanner reader = new Scanner(created);
+            while (reader.hasNextLine()) {
+                text = text + reader.nextLine() + "\n";
+            }
+        } catch (FileNotFoundException e) {
+            text = "";
+        }
+
+        String[] text1 = text.split("\n");
+        String result = "";
+        editor = new JTextArea(text);
+
+        // Add a caretListener to the editor. This is an anonymous class because it is inline and has no specific name.
+        // Each time the caret is moved, it will trigger the listener and its method caretUpdate.
+// It will then pass the event to the update method including the source of the event (which is our textarea control)
+        editor.addCaretListener(e -> {
+            JTextArea editArea = (JTextArea) e.getSource();
+
+            // Lets start with some default values for the line and column.
+            int linenum = 1;
+            int columnnum = 1;
+
+            // We create a try catch to catch any exceptions. We will simply ignore such an error for our demonstration.
+            try {
+                // First we find the position of the caret. This is the number of where the caret is in relation to the start of the JTextArea
+                // in the upper left corner. We use this position to find offset values (eg what line we are on for the given position as well as
+                // what position that line starts on.
+                int caretpos = editArea.getCaretPosition();
+                linenum = editArea.getLineOfOffset(caretpos);
+
+                // We subtract the offset of where our line starts from the overall caret position.
+                // So lets say that we are on line 5 and that line starts at caret position 100, if our caret position is currently 106
+                // we know that we must be on column 6 of line 5.
+                columnnum = caretpos - editArea.getLineStartOffset(linenum);
+
+                // We have to add one here because line numbers start at 0 for getLineOfOffset and we want it to start at 1 for display.
+                linenum += 1;
+                System.out.println(text1[linenum - 1]);
+                charCounter = text1[linenum - 1].length() - 1;
+                while (text1[linenum - 1].charAt(charCounter) != '=') {
+                    charCounter--;
+                }
+                ;
+                input.setText(text1[linenum - 1].substring(charCounter + 1));
+                journalFrame.dispose();
+            } catch (Exception ex) {
+            }
+
+            // Once we know the position of the line and the column, pass it to a helper function for updating the status bar.
+            updateStatus(linenum, columnnum);
+        });
+
+        // Add the fields to the layout, the editor in the middle and the status at the bottom.
+        journalFrame.add(editor, BorderLayout.CENTER);
+
+        status = new JTextField();
+        journalFrame.add(status, BorderLayout.SOUTH);
+
+        // Give the status update value
+        updateStatus(1, 1);
+        return result;
+    }
+
+    // This helper function updates the status bar with the line number and column number.
+    private void updateStatus(int linenumber, int columnnumber) {
+        status.setText("Line: " + linenumber + " Column: " + columnnumber);
     }
 
     ////////////////////////////////////   КОНЕЦ КЛАССА GUI    //////////////////////////////////////////////////////////
