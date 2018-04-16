@@ -1,5 +1,6 @@
 package com.company;
 
+
 /*
  * класс Logic: просчёт  выражений (логика калькулятора)
  */
@@ -9,7 +10,47 @@ public class Logic {
      *Обрабртка исходной строки
      */
 
-    public static String parc(String StartExpression) {
+    //Обработка начальной строки(первый уровень)
+    public static String parse(String baseExpression) {
+        int expStart = 0; // индекс начала блока ( ... )
+        int expEnd; // индекс конца блока ( ... )
+        int counter; // счётчик скобок
+        String result = "Error";
+        String value = baseExpression;
+        String nextString = ""; // переменная  для отправки по рекурсии
+        // поиск блока ( ."выражение". ) (будет записываться в переменную nextString)
+        if (baseExpression.contains("(") || baseExpression.contains(")")) {
+            while (baseExpression.charAt(expStart) != '(') {
+                expStart++;
+            }
+            counter = 1;
+            expEnd = expStart;
+            while (counter > 0 && expEnd < baseExpression.length() - 1) {
+                expEnd++;
+                nextString += value.charAt(expEnd);
+                if (baseExpression.charAt(expEnd) == ')') {
+                    counter--;
+                }
+                if (baseExpression.charAt(expEnd) == '(') {
+                    counter++;
+                }
+            }
+            if (counter != 0) {
+                return ("Неправильные входные данные: несовпадает колличество открывающих и закрывающих скобок");
+            }
+            if (counter == 0) {
+                nextString = nextString.substring(0, nextString.length() - 1);
+                result = baseExpression.substring(0, expStart) +
+                        parse(nextString) + baseExpression.substring(expEnd + 1);
+                result = parse(result);
+            }
+        } else {
+            result = parc(baseExpression);
+        }
+        return result;
+    }
+
+    private static String parc(String StartExpression) {
         String expressionInput;
         int expStart;
         int expEnd;

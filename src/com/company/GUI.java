@@ -139,7 +139,7 @@ public class GUI extends JFrame {
         // Анонимный класс-обработчик для кнопки "равно"
         buttonEQW.addActionListener(failed -> {
             String teller = input.getText();
-            String result = Logic.parc(teller);
+            String result = Logic.parse(teller);
             File journal = new File("Journal\\test.txt");
             try {
                 PrintWriter journalWriter = new PrintWriter(
@@ -182,6 +182,7 @@ public class GUI extends JFrame {
         center.add(buttonLG);
     }
 
+    // ЖУРНАЛ
     public String Journal() {
         journalFrame.setTitle("Журнал");
         journalFrame.setBounds(500, 250, 500, 500);
@@ -192,7 +193,7 @@ public class GUI extends JFrame {
 
         journalFrame.setVisible(true);
 
-        String text = "";
+        String text = ""; //переменная для вывода текста из файла
         File created = new File("Journal\\test.txt");
         try {
 
@@ -234,11 +235,10 @@ public class GUI extends JFrame {
                 // We have to add one here because line numbers start at 0 for getLineOfOffset and we want it to start at 1 for display.
                 linenum += 1;
                 System.out.println(text1[linenum - 1]);
-                charCounter = text1[linenum - 1].length() - 1;
+                charCounter = text1[linenum - 1].length() - 1; //переменная для поиска индекса знака "="
                 while (text1[linenum - 1].charAt(charCounter) != '=') {
                     charCounter--;
                 }
-                ;
                 input.setText(text1[linenum - 1].substring(charCounter + 1));
                 journalFrame.dispose();
             } catch (Exception ex) {
