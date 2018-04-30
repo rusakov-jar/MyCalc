@@ -28,7 +28,6 @@ public class GUI extends JFrame {
     Image imgLog_x = new ImageIcon("images\\log_x.png").getImage();
 
     int charCounter = 0;
-    String result = "";
     private JTextArea editor;
 
     private JButton button1 = new JButton("1");
@@ -155,6 +154,32 @@ public class GUI extends JFrame {
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
+        //анонимные классы для кнопок функций
+
+        buttonAVX.addActionListener(e -> {
+            String addText = "^"; // спец. символ функции
+            String text = input.getText();
+            int stringIndex = input.getCaretPosition(); // определяем местоположение курсора в строке
+            input.setText(text.substring(0, stringIndex) + addText + text.substring(stringIndex)); // добовляем в указанное место спец. символ функции
+            input.setCaretPosition(stringIndex + 1);// сдвигаем курсор
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+        });
+        buttonSQRT.addActionListener(e -> {
+            String addText = "sqrt("; // спец. символ функции
+            String text = input.getText();
+            int stringIndex = input.getCaretPosition();// определяем местоположение курсора в строке
+            input.setText(text.substring(0, stringIndex) + addText + text.substring(stringIndex));// добовляем в указанное место спец. символ функции
+            input.setCaretPosition(stringIndex + 5);// сдвигаем курсор
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+        });
+        buttonLG.addActionListener(e -> {
+            String addText = "log("; // спец. символ функции
+            String text = input.getText();
+            int stringIndex = input.getCaretPosition();// определяем местоположение курсора в строке
+            input.setText(text.substring(0, stringIndex) + addText + text.substring(stringIndex));// добовляем в указанное место спец. символ функции
+            input.setCaretPosition(stringIndex + 4);// сдвигаем курсор
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+        });
         buttonJurnal.addActionListener(e -> {
             Journal();
             input.grabFocus();

@@ -1,6 +1,5 @@
 package com.company;
 
-
 /*
  * класс Logic: просчёт  выражений (логика калькулятора)
  */
@@ -54,7 +53,81 @@ public class Logic {
         String expressionInput;
         int expStart;
         int expEnd;
+        double x; // аргумент для "Х в степени functionArgument"
+        double functionArgument;
         StartExpression = "$" + StartExpression + "$"; //символы начала/конца строки
+        // реализация функций
+        // log (x)
+        while (StartExpression.contains("log")) {
+            expStart = 0;
+            expressionInput = "";
+            while (StartExpression.charAt(expStart) != 'l') { //ищем спец. символ функции
+                expStart++;
+            }
+            expEnd = expStart + 3; // ищем аргумент
+            // посимвольно собираем аргумент (while ниже)
+            while (StartExpression.charAt(expEnd) != '+' && StartExpression.charAt(expEnd) != '-' &&
+                    StartExpression.charAt(expEnd) != '*' && StartExpression.charAt(expEnd) != '/' &&
+                    StartExpression.charAt(expEnd) != '$') {
+                expressionInput += StartExpression.charAt(expEnd);
+                expEnd++;
+            }
+            // заменяем в исходной строке функцию на результат
+            functionArgument = Double.parseDouble(expressionInput);
+            StartExpression = StartExpression.substring(0, expStart)
+                    + Math.log(functionArgument) + StartExpression.substring(expEnd);
+        }
+        //sqrt(x) - реализованная в этом while функция
+        while (StartExpression.contains("sqrt")) {// пок есть спец. символ функции
+            expStart = 0;
+            expressionInput = "";
+            while (StartExpression.charAt(expStart) != 's') {// ищем начало функции (номер первого символа)
+                expStart++;
+            }
+            // ищем аргумент
+            expEnd = expStart + 4;
+            while (StartExpression.charAt(expEnd) != '+' && StartExpression.charAt(expEnd) != '-' &&
+                    StartExpression.charAt(expEnd) != '*' && StartExpression.charAt(expEnd) != '/' &&
+                    StartExpression.charAt(expEnd) != '$') {
+                expressionInput += StartExpression.charAt(expEnd);
+                expEnd++;
+            }
+            // заменяем в исходной строке функцию на результат
+            functionArgument = Double.parseDouble(expressionInput);
+            StartExpression = StartExpression.substring(0, expStart)
+                    + Math.sqrt(functionArgument) + StartExpression.substring(expEnd);
+        }
+        // x^functionArgument - реализованная в этом while функция (Х в степени functionArgument)
+        while (StartExpression.contains("^")) {
+            expStart = 0;
+            expressionInput = "";
+            while (StartExpression.charAt(expStart) != '^') { // ищем спец символ (номер позиции)
+                expStart++;
+            }
+            expEnd = expStart + 1;
+            expStart--;
+            // ищем в какую степень возводить Х (переменная functionArgument)
+            while (StartExpression.charAt(expEnd) != '+' && StartExpression.charAt(expEnd) != '-' &&
+                    StartExpression.charAt(expEnd) != '*' && StartExpression.charAt(expEnd) != '/' &&
+                    StartExpression.charAt(expEnd) != '$') {
+                expressionInput += StartExpression.charAt(expEnd);
+                expEnd++;
+            }
+            functionArgument = Double.parseDouble(expressionInput);
+            expressionInput = "";
+            // ищем Х
+            while (StartExpression.charAt(expStart) != '+' && StartExpression.charAt(expStart) != '-' &&
+                    StartExpression.charAt(expStart) != '*' && StartExpression.charAt(expStart) != '/' &&
+                    StartExpression.charAt(expStart) != '$') {
+                expressionInput = StartExpression.charAt(expStart) + expressionInput;
+                expStart--;
+            }
+            // заменяем в исходной строке функцию на результат
+            x = Double.parseDouble(expressionInput);
+            StartExpression = StartExpression.substring(0, expStart)
+                    + Math.pow(x, functionArgument) + StartExpression.substring(expEnd);
+        }
+
         // поиск выражений со знаками *,/
         while (StartExpression.contains("*") || StartExpression.contains("/")) {
             expStart = 0;
