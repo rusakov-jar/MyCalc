@@ -26,6 +26,8 @@ public class GUI extends JFrame {
     Image imgRightShift = new ImageIcon("images\\RightShift.png").getImage();
     Image imgPicture = new ImageIcon("images\\picture.png").getImage();
     Image imgLog_x = new ImageIcon("images\\log_x.png").getImage();
+    Image imgSoundON = new ImageIcon("images\\soundON.jpg").getImage();
+    Image imgSoundOFF = new ImageIcon("images\\soundOFF.jpg").getImage();
 
     int charCounter = 0;
     private JTextArea editor;
@@ -47,9 +49,9 @@ public class GUI extends JFrame {
     private JButton buttonDevide = new JButton("/");
     private JButton buttonEQW = new JButton("=");
     private JTextField input = new JTextField("", 10);
-    private JLabel label = new JLabel("Input: ");
+    private JLabel label = new JLabel("Ввод: ");
     private JButton buttonClear = new JButton("C");
-    private JButton buttonBack = new JButton("Back");
+    private JButton buttonBack = new JButton("Стереть");
     private JButton buttonSQRT = new JButton(new ImageIcon(imgSQRTX));
     private JButton buttonLeft = new JButton("(");
     private JButton buttonRight = new JButton(")");
@@ -57,7 +59,8 @@ public class GUI extends JFrame {
     private JButton buttonAVX = new JButton(new ImageIcon(imgAX));
     private JButton buttonLeftShift = new JButton(new ImageIcon(imgLeftShift));
     private JButton buttonRightShift = new JButton(new ImageIcon(imgRightShift));
-    private JButton buttonJurnal = new JButton("Journal");
+    private JButton buttonJurnal = new JButton("Журнал");
+    private JButton buttonSound = new JButton(new ImageIcon(imgSoundON));
     private JLabel picture = new JLabel(new ImageIcon(imgPicture));
     private JTextField status;
     private JFrame journalFrame = new JFrame();
@@ -87,12 +90,44 @@ public class GUI extends JFrame {
         container.add(center, BorderLayout.CENTER);
         top.add(label, BorderLayout.WEST);
         top.add(input, BorderLayout.CENTER);
-        // Анонимный класс для кнопки сброса текста в поле ввода
+        top.add(buttonSound, BorderLayout.EAST);
+        // Анонимный класс для кнопки сброса текста в журнале
         buttonClear.addActionListener(failed -> {
-                    input.setText("0");
-            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+                    File created = new File("Journal\\test.txt");
+                    try {
+                        FileWriter journalWriter = new FileWriter(created);
+                        journalWriter.write("");
+                        journalWriter.close();
+                    } catch (IOException e) {
+                    }
+                    editor.setText("");
+                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
+        input.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_EQUALS) {
+                    String teller = input.getText();
+                    String result = Logic.parse(teller);
+                    File journal = new File("Journal\\test.txt");
+                    try {
+                        PrintWriter journalWriter = new PrintWriter(
+                                new BufferedWriter(new FileWriter(journal, true)));
+                        journalWriter.println(teller + "=" + result);
+                        journalWriter.flush(); //чистка буфера (комментарий для себя)
+                        journalWriter.close(); //закрытие потока/возвращение ресурсов
+                        // (тоже для себя)
+                    } catch (IOException ex) {
+                        result = "";
+                    }
+                    result.replaceAll("=", "");
+                    input.setText(result);
+                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+                }
+
+            }
+        });
         //Анонимный класс для кнопки "стереть символ перед курсором в строке"
         buttonBack.addActionListener(failed -> {
                     int caretIndex = input.getCaretPosition();
@@ -217,6 +252,19 @@ public class GUI extends JFrame {
         journalFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
 
         journalFrame.setVisible(true);
+        JRadioButton showResult = new JRadioButton("рзультат");
+        JRadioButton showExpression = new JRadioButton("выражение");
+        ButtonGroup returning = new ButtonGroup();
+        returning.add(showExpression);
+        returning.add(showResult);
+        JPanel journalTopPanel = new JPanel();
+        journalTopPanel.setLayout(new BorderLayout());
+        journalTopPanel.add(showExpression, BorderLayout.CENTER);
+        journalTopPanel.add(showResult, BorderLayout.WEST);
+        journalTopPanel.add(buttonClear, BorderLayout.EAST);
+        showResult.setSelected(true);
+        showExpression.setSelected(false);
+
 
         String text = ""; //переменная для вывода текста из файла
         File created = new File("Journal\\test.txt");
@@ -259,12 +307,15 @@ public class GUI extends JFrame {
 
                 // We have to add one here because line numbers start at 0 for getLineOfOffset and we want it to start at 1 for display.
                 linenum += 1;
-                System.out.println(text1[linenum - 1]);
                 charCounter = text1[linenum - 1].length() - 1; //переменная для поиска индекса знака "="
                 while (text1[linenum - 1].charAt(charCounter) != '=') {
                     charCounter--;
                 }
-                input.setText(text1[linenum - 1].substring(charCounter + 1));
+                if (showResult.isSelected()) {
+                    input.setText(text1[linenum - 1].substring(charCounter + 1));
+                } else {
+                    input.setText(text1[linenum - 1].substring(0, charCounter));
+                }
                 journalFrame.dispose();
             } catch (Exception ex) {
             }
@@ -273,11 +324,16 @@ public class GUI extends JFrame {
             updateStatus(linenum, columnnum);
         });
 
+        JScrollPane scrollPane = new JScrollPane(editor);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         // Add the fields to the layout, the editor in the middle and the status at the bottom.
-        journalFrame.add(editor, BorderLayout.CENTER);
+        journalFrame.add(scrollPane, BorderLayout.CENTER);
+        journalFrame.add(journalTopPanel, BorderLayout.NORTH);
 
         status = new JTextField();
         journalFrame.add(status, BorderLayout.SOUTH);
+
 
         // Give the status update value
         updateStatus(1, 1);
