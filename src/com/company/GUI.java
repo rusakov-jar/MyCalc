@@ -1,11 +1,17 @@
 package com.company;
 
+import javax.sound.sampled.*;
+
+
+import java.io.File;
+import java.io.IOException;
+
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.awt.BorderLayout;
-import java.io.File;
 import java.util.Scanner;
 
 
@@ -20,6 +26,13 @@ import java.util.Scanner;
 // окно и список элементов
 public class GUI extends JFrame {
 
+
+    // Звук
+    Clip soundClip;
+    File soundFile = new File("sound/sound.wav");
+    AudioFileFormat af;
+    private boolean soundIsON = true;
+
     Image imgSQRTX = new ImageIcon("images\\sqr(x).png").getImage();
     Image imgAX = new ImageIcon("images\\A(x).png").getImage();
     Image imgLeftShift = new ImageIcon("images\\LeftShift.png").getImage();
@@ -28,6 +41,7 @@ public class GUI extends JFrame {
     Image imgLog_x = new ImageIcon("images\\log_x.png").getImage();
     Image imgSoundON = new ImageIcon("images\\soundON.jpg").getImage();
     Image imgSoundOFF = new ImageIcon("images\\soundOFF.jpg").getImage();
+
 
     int charCounter = 0;
     private JTextArea editor;
@@ -50,7 +64,6 @@ public class GUI extends JFrame {
     private JButton buttonEQW = new JButton("=");
     private JTextField input = new JTextField("", 10);
     private JLabel label = new JLabel("Ввод: ");
-    private JButton buttonClear = new JButton("C");
     private JButton buttonBack = new JButton("Стереть");
     private JButton buttonSQRT = new JButton(new ImageIcon(imgSQRTX));
     private JButton buttonLeft = new JButton("(");
@@ -91,23 +104,21 @@ public class GUI extends JFrame {
         top.add(label, BorderLayout.WEST);
         top.add(input, BorderLayout.CENTER);
         top.add(buttonSound, BorderLayout.EAST);
-        // Анонимный класс для кнопки сброса текста в журнале
-        buttonClear.addActionListener(failed -> {
-                    File created = new File("Journal\\test.txt");
-                    try {
-                        FileWriter journalWriter = new FileWriter(created);
-                        journalWriter.write("");
-                        journalWriter.close();
-                    } catch (IOException e) {
-                    }
-                    editor.setText("");
-                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
-                }
-        );
+        buttonSound.addActionListener(e -> {
+            soundIsON = !soundIsON;
+            JButton b = (JButton) e.getSource();
+            if (soundIsON) {
+                b.setIcon(new ImageIcon(imgSoundON));
+            } else {
+                b.setIcon(new ImageIcon(imgSoundOFF));
+            }
+            if (soundIsON) play();
+        });
+
         input.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_EQUALS) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String teller = input.getText();
                     String result = Logic.parse(teller);
                     File journal = new File("Journal\\test.txt");
@@ -130,26 +141,29 @@ public class GUI extends JFrame {
         });
         //Анонимный класс для кнопки "стереть символ перед курсором в строке"
         buttonBack.addActionListener(failed -> {
-                    int caretIndex = input.getCaretPosition();
-                    String teller = input.getText();
-            if (input.getText().length() != 0) {
+            int caretIndex = input.getCaretPosition();
+            String teller = input.getText();
+            if (caretIndex != 0) {
                 input.setText(teller.substring(0, caretIndex - 1) + teller.substring(caretIndex));
                 input.setCaretPosition(caretIndex - 1);
             }
-                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+            if (soundIsON) play(); // звук
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
         buttonLeftShift.addActionListener(failed -> {
             if (input.getCaretPosition() > 0) {
                 input.setCaretPosition(input.getCaretPosition() - 1);
             }
-                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+            if (soundIsON) play(); // звук
+            input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
         buttonRightShift.addActionListener(failed -> {
             if (input.getCaretPosition() < input.getText().length()) {
                 input.setCaretPosition(input.getCaretPosition() + 1);
             }
+            if (soundIsON) play(); // звук
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
@@ -185,7 +199,9 @@ public class GUI extends JFrame {
             } catch (IOException ex) {
                 result = "";
             }
+            editor.setText(editor.getText() + teller + "=" + result);
             input.setText(result);
+            if (soundIsON) play(); // звук
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
                 }
         );
@@ -197,6 +213,7 @@ public class GUI extends JFrame {
             int stringIndex = input.getCaretPosition(); // определяем местоположение курсора в строке
             input.setText(text.substring(0, stringIndex) + addText + text.substring(stringIndex)); // добовляем в указанное место спец. символ функции
             input.setCaretPosition(stringIndex + 1);// сдвигаем курсор
+            if (soundIsON) play(); // звук
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
         });
         buttonSQRT.addActionListener(e -> {
@@ -205,6 +222,7 @@ public class GUI extends JFrame {
             int stringIndex = input.getCaretPosition();// определяем местоположение курсора в строке
             input.setText(text.substring(0, stringIndex) + addText + text.substring(stringIndex));// добовляем в указанное место спец. символ функции
             input.setCaretPosition(stringIndex + 5);// сдвигаем курсор
+            if (soundIsON) play(); // звук
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
         });
         buttonLG.addActionListener(e -> {
@@ -213,12 +231,16 @@ public class GUI extends JFrame {
             int stringIndex = input.getCaretPosition();// определяем местоположение курсора в строке
             input.setText(text.substring(0, stringIndex) + addText + text.substring(stringIndex));// добовляем в указанное место спец. символ функции
             input.setCaretPosition(stringIndex + 4);// сдвигаем курсор
+            if (soundIsON) play(); // звук
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
         });
         buttonJurnal.addActionListener(e -> {
             Journal();
+            if (soundIsON) play(); // звук
             input.grabFocus();
         });
+
+
         // добавление кнопок на панель в середине
         center.add(button1);
         center.add(button2);
@@ -242,6 +264,26 @@ public class GUI extends JFrame {
         center.add(buttonLG);
     }
 
+    void play() {
+        try {
+            af = AudioSystem.getAudioFileFormat(soundFile);
+            AudioFormat f = af.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, f);
+            if (AudioSystem.isLineSupported(info)) {
+                try {
+                    soundClip = (Clip) AudioSystem.getLine(info);
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+                    soundClip.open(ais);
+                    soundClip.start();
+                } catch (LineUnavailableException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (UnsupportedAudioFileException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // ЖУРНАЛ
     public String Journal() {
         journalFrame.setTitle("Журнал");
@@ -249,21 +291,42 @@ public class GUI extends JFrame {
 
         // Lets create a border layout to make positioning of items easy and quick.
         journalFrame.setLayout(new BorderLayout());
-        journalFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
+        journalFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         journalFrame.setVisible(true);
         JRadioButton showResult = new JRadioButton("рзультат");
         JRadioButton showExpression = new JRadioButton("выражение");
+        showExpression.addActionListener(e -> {
+            if (soundIsON) play(); // звук
+        });
+        showResult.addActionListener(e -> {
+            if (soundIsON) play(); // звук
+        });
         ButtonGroup returning = new ButtonGroup();
         returning.add(showExpression);
         returning.add(showResult);
+        JButton buttonClear = new JButton("C");
         JPanel journalTopPanel = new JPanel();
         journalTopPanel.setLayout(new BorderLayout());
         journalTopPanel.add(showExpression, BorderLayout.CENTER);
         journalTopPanel.add(showResult, BorderLayout.WEST);
         journalTopPanel.add(buttonClear, BorderLayout.EAST);
-        showResult.setSelected(true);
-        showExpression.setSelected(false);
+
+        // Анонимный класс для кнопки сброса текста в журнале
+        buttonClear.addActionListener(failed -> {
+                    File created = new File("Journal\\test.txt");
+                    try {
+                        FileWriter journalWriter = new FileWriter(created);
+                        journalWriter.write("0");
+                        journalWriter.close();
+                    } catch (IOException e) {
+                    }
+                    editor.setText("");
+                    journalFrame.dispose();
+                    if (soundIsON) play(); // звук
+                    input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
+                }
+        );
 
 
         String text = ""; //переменная для вывода текста из файла
@@ -274,19 +337,22 @@ public class GUI extends JFrame {
             while (reader.hasNextLine()) {
                 text = text + reader.nextLine() + "\n";
             }
+            reader.close();
         } catch (FileNotFoundException e) {
             text = "";
         }
 
-        String[] text1 = text.split("\n");
         String result = "";
         editor = new JTextArea(text);
+
+        editor.grabFocus();
 
         // Add a caretListener to the editor. This is an anonymous class because it is inline and has no specific name.
         // Each time the caret is moved, it will trigger the listener and its method caretUpdate.
 // It will then pass the event to the update method including the source of the event (which is our textarea control)
         editor.addCaretListener(e -> {
             JTextArea editArea = (JTextArea) e.getSource();
+            String[] text1 = editor.getText().split("\n");
 
             // Lets start with some default values for the line and column.
             int linenum = 1;
@@ -313,8 +379,10 @@ public class GUI extends JFrame {
                 }
                 if (showResult.isSelected()) {
                     input.setText(text1[linenum - 1].substring(charCounter + 1));
+                    System.out.println(text1[linenum - 1].substring(charCounter + 1));
                 } else {
                     input.setText(text1[linenum - 1].substring(0, charCounter));
+                    System.out.println(text1[linenum - 1].substring(0, charCounter));
                 }
                 journalFrame.dispose();
             } catch (Exception ex) {
@@ -359,8 +427,8 @@ public class GUI extends JFrame {
             addText.insert(stringIndex, ((JButton) failed.getSource()).getText());
             input.setText(String.valueOf(addText));
             input.setCaretPosition(stringIndex + 1);
+            if (soundIsON) play();
             input.grabFocus();//делает курсор ВИДИМЫМ ПОСЛЕ НАЖАТИЯ НА КНОПКУ (комментарий для себя, позже уберу)
         }
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
