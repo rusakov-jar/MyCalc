@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'edu.sc.seis.launch4j' version '2.4.4'
+
+    id 'application'
+}
+
+// min required java version for compilation (launch4j will use the same minimum)
+sourceCompatibility = 1.8
+
+// to preserve russian text
+compileJava.options.encoding = 'UTF-8'
+
+version = 1.0
+
+wrapper {
+    // bundled gradle version
+    gradleVersion = '4.7'
+}
+
+// application main class name
+mainClassName = 'com.company.Main'
+
+launch4j {
+    outfile = 'Calc.exe'
+    mainClassName = project.mainClassName
+
+    // if you remove this line, exe will work standalone (will search for JAVA_HOME)
+    bundledJrePath = 'jre'
+}
+
+task buildDelivery(type: Zip) {
+    from (createExe) {
+        exclude 'lib'
+    }
+    // bundle jre
+    from (System.getenv("JAVA_HOME")+"/jre/") {
+        into 'jre'
+    }
+
+    archiveName "Calc-sborkaN-${version}-.zip"
+    destinationDir(file('build/dist/'))
+
+    doLast() {
+        println "Delivery built: ${buildDelivery.outputs.files.first().absolutePath}"
+    }
+}
